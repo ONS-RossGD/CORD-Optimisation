@@ -33,6 +33,7 @@ def done():
     sys.stdout.write("\033[1;32m")
     print('Done!')
     sys.stdout.write("\033[0;0m")
+    print('A test branch')
     
 def unzipFiles(file):
     """Unzips the specified file.
