@@ -5,7 +5,9 @@ Common functions used across CORD Optimisation scripts.
 
 import sys, os
 from zipfile import ZipFile
-
+import tkinter as tk
+from tkinter.filedialog import askdirectory
+    
 def error(msg, warning=False):
     """Prints an error message in red.
     """
@@ -16,7 +18,14 @@ def error(msg, warning=False):
         sys.stdout.write("\033[1;31m")
         print('ERROR:', msg)
     sys.stdout.write("\033[0;0m")
-    
+
+def setupFilepaths():
+    root = tk.Tk()
+    inpFol = askdirectory(title="Choose an INPUT folder")
+    outFol = askdirectory(title="Choose an OUTPUT folder")
+    root.destroy()
+    return (inpFol, outFol)
+
 def createFormat(df, style):
     """Creates the xlsxwriter format for a given dataframe and returns it as a
     string.
