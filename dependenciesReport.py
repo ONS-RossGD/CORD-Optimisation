@@ -6,30 +6,8 @@ Created on Fri Jan 24 15:29:04 2020
 """
 
 import pandas as pd
-import glob, os, zipfile, datetime
+import glob, os, datetime
 import CORDtools as ct
-
-
-def unzipFiles():
-    """Unzips all zip files in the input folder.
-    """
-    global configReports
-    os.chdir(inpFol)
-    for file in glob.glob('*.zip'):
-        if '_Config_Report_' not in file:
-            ct.error('"'+file+'" is not a Config Report and will be ignored.',
-                  warning=True)
-            continue
-        fileTitle = os.path.splitext(file)[0]
-        splitTitle = fileTitle.split('_Config_Report_')
-        r = configReports['Config Report'].count()
-        configReports.loc[r, 'Config Report'] = fileTitle
-        configReports.loc[r, 'Statistical Activity'] = splitTitle[0]
-        configReports.loc[r, 'Mode'] = splitTitle[1].split('_')[0]
-        configReports.loc[r, 'Date'] = ' '.join(splitTitle[1].split('_')[1:])
-        print('Unzipping', fileTitle, '...')
-        with zipfile.ZipFile(file, 'r') as zipObj:
-             zipObj.extractall(fileTitle)
 
 def updateMasters():
     global outMasterDf
@@ -157,15 +135,12 @@ def runTask():
     global configReports
     global curStatAct
     global inpFol, outFol
-    configReports = pd.DataFrame(columns=['Config Report',
-                                          'Statistical Activity',
-                                          'Mode', 'Date'])
     outMasterDf = pd.DataFrame(columns=['Source','Target', 'Data Sent', 
                                      'Data Recieved', 'Copy Calc'])
     inMasterDf = pd.DataFrame(columns=['Source','Target', 'Data Sent', 
                                      'Data Recieved', 'Copy Calc'])
     (inpFol, outFol) = ct.setupFilepaths()
-    unzipFiles()
+    configReports = ct.unzipConfigReports(inpFol)
     for i, configRpt in enumerate(configReports['Config Report']):
         curStatAct = configReports.loc[i, 'Statistical Activity']
         os.chdir(inpFol)

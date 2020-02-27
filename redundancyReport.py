@@ -30,45 +30,8 @@ The script currently checks for the following:
 Author: Ross Gregory-Davies : gregor1
 """
 import pandas as pd
-import glob, os, zipfile, datetime
+import glob, os, datetime
 import CORDtools as ct
-
-def unzipFiles():
-    """Unzips all zip files in the input folder.
-    """
-    global configReports
-    os.chdir(inpFile)
-    for file in glob.glob('*.zip'):
-        if '_Config_Report_' not in file:
-            ct.error('"'+file+'" is not a Config Report and will be ignored.',
-                  warning=True)
-            continue
-        fileTitle = os.path.splitext(file)[0]
-        splitTitle = fileTitle.split('_Config_Report_')
-        r = configReports['Config Report'].count()
-        configReports.loc[r, 'Config Report'] = fileTitle
-        configReports.loc[r, 'Statistical Activity'] = splitTitle[0]
-        configReports.loc[r, 'Mode'] = splitTitle[1].split('_')[0]
-        configReports.loc[r, 'Date'] = ' '.join(splitTitle[1].split('_')[1:])
-        print('Unzipping', fileTitle, '...')
-        with zipfile.ZipFile(file, 'r') as zipObj:
-             zipObj.extractall(fileTitle)
-
-def createOutFolder():
-    global outFolder
-    """Changes directories to the output folder setting one up if it doesn't 
-    already exist.
-    """
-    returnPath = os.getcwd()
-    os.chdir(outFile)
-    fol = datetime.datetime.now().strftime("%d-%m-%Y (%H;%M;%S)")
-    try:
-        os.chdir(fol)
-    except:
-        os.mkdir(fol)
-        os.chdir(fol)
-    outFolder = os.getcwd()
-    os.chdir(returnPath)
 
 def readTasks():
     global tasksDf
@@ -338,7 +301,7 @@ def searchClassGrpsDependencies():
             extClassDf.drop(i, inplace=True)
             continue
         if statAct not in grpSrchDf.columns:
-            os.chdir(inpFile)
+            os.chdir(inpFol)
             fol = configReports.loc[configReports['Statistical Activity']\
                           .isin([statAct]), 'Config Report'].tolist()[0]
             os.chdir(fol)
@@ -569,14 +532,11 @@ def runTask():
     global curStatAct
     global usedGrps
     global usedGrpsExt
-    global inpFile, outFile
-    configReports = pd.DataFrame(columns=['Config Report',
-                                          'Statistical Activity',
-                                          'Mode', 'Date'])
+    global inpFol, outFolder
     grpSrchDf = pd.DataFrame()
-    (inpFile, outFile) = ct.setupFilepaths()
-    unzipFiles()
-    createOutFolder()
+    (inpFol, outFol) = ct.setupFilepaths()
+    configReports = ct.unzipConfigReports(inpFol)
+    outFolder = ct.createOutFolder(outFol)
     for i, configRpt in enumerate(configReports['Config Report']):
         curStatAct = configReports.loc[i, 'Statistical Activity']
         print('Writing redundancy report for ' + curStatAct + '...')
@@ -590,7 +550,7 @@ def runTask():
         redundantConChecks = []
         usedGrpsExt = []
         usedGrps = []
-        os.chdir(inpFile)
+        os.chdir(inpFol)
         os.chdir(configRpt)
         readCalcs()
         readVisualisations()
@@ -626,5 +586,5 @@ def runTask():
 
 timeTol = datetime.datetime.now() - datetime.timedelta(days=365)
 runTask()
-os.chdir(inpFile)
+os.chdir(inpFol)
 ct.done()
