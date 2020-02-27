@@ -456,7 +456,7 @@ def formatSheet(df, sheet, style, comparison=False):
                                    'bg_color':'red', 'align': 'center'})
     ws.add_table(0,0,len(df.index.tolist()),
                  len(df.columns.tolist())+len(df.index.names)-1,
-                 ct.createFormat(df, style))
+                 ct.createFormat(df, style, index=True))
     if comparison:
         ws.conditional_format(1,len(df.index.names),len(df.index.tolist()),
                               len(df.columns.tolist())+len(df.index.names),

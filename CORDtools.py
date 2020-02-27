@@ -26,13 +26,14 @@ def setupFilepaths():
     root.destroy()
     return (inpFol, outFol)
 
-def createFormat(df, style):
+def createFormat(df, style, index=False):
     """Creates the xlsxwriter format for a given dataframe and returns it as a
     string.
     """
     cols = []
-    for col in df.index.names:
-        cols.append({'header':col})
+    if index:
+        for col in df.index.names:
+            cols.append({'header':col})
     for col in df.columns.tolist():
         cols.append({'header':col})
     form = {'columns':cols, 'style': style}
@@ -50,3 +51,19 @@ def unzipFiles(file):
     print('Unzipping', fileTitle, '...')
     with ZipFile(file, 'r') as zipObj:
         zipObj.extractall(fileTitle)
+        
+def splitCordString(s):
+    """Split up a CORD Output string (in format {*** = ***}) into individual
+    strings contained in list splitString. Returns splitString.
+    """
+    s = s.replace('{classification', ' classification')
+    s = s.replace('} ','')
+    s = s.replace('}','')
+    s = s.replace("'", '')
+    s = s.replace(' {', '{')
+    splitString = s.split('{')
+    while '' in splitString:
+        splitString.remove('')
+    for i, ss in enumerate(splitString):
+        splitString[i] = ss.strip()
+    return splitString
