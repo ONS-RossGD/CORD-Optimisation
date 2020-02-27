@@ -19,18 +19,26 @@ def error(msg, warning=False):
         print('ERROR:', msg)
     sys.stdout.write("\033[0;0m")
 
-def setupFilepaths():
+def setupFilepaths(proc=False):
     root = tk.Tk()
     inpFol = askdirectory(title="Choose an INPUT folder")
+    if proc:
+        procFol = askdirectory(title="Choose a PROCESSING folder")
     outFol = askdirectory(title="Choose an OUTPUT folder")
     root.destroy()
     if inpFol == '':
         error('An INPUT folder must be selected.')
         sys.exit()
+    if proc and procFol == '':
+        error('A PROCCESSING folder must be selected.')
+        sys.exit()
     if outFol == '':
         error('An OUTPUT folder must be selected.')
         sys.exit()
-    return (inpFol, outFol)
+    if proc:
+        return (inpFol, procFol, outFol)
+    else:
+        return (inpFol, outFol)
 
 def createFormat(df, style, idx=False):
     """Creates the xlsxwriter format for a given dataframe and returns it as a
@@ -58,11 +66,12 @@ def unzipFiles(file):
     with ZipFile(file, 'r') as zipObj:
         zipObj.extractall(fileTitle)
         
-def splitCordString(s):
+def splitCordString(s, clas=True):
     """Split up a CORD Output string (in format {*** = ***}) into individual
     strings contained in list splitString. Returns splitString.
     """
-    s = s.replace('{classification', ' classification')
+    if clas:
+        s = s.replace('{classification', ' classification')
     s = s.replace('} ','')
     s = s.replace('}','')
     s = s.replace("'", '')
