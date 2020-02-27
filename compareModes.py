@@ -10,6 +10,8 @@ folder.
 Script can currently only create one OUTPUT file for ONE comparison (eg INT19-
 Bluebook). If other comparison zip's are found in the input file (eg DEV19-
 Bluebook), the file will be skipped.
+
+Author: Ross Gregory-Davies : gregor1
 """
 
 import os, sys, glob
