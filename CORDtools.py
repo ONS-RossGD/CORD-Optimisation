@@ -26,12 +26,12 @@ def setupFilepaths():
     root.destroy()
     return (inpFol, outFol)
 
-def createFormat(df, style, index=False):
+def createFormat(df, style, idx=False):
     """Creates the xlsxwriter format for a given dataframe and returns it as a
     string.
     """
     cols = []
-    if index:
+    if idx:
         for col in df.index.names:
             cols.append({'header':col})
     for col in df.columns.tolist():
