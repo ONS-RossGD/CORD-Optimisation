@@ -1,4 +1,6 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-"
+"""This script is a work in progress and is not currently functional.
+"""
 import glob, os
 import CORDtools as ct
 import pandas as pd
