@@ -9,7 +9,8 @@ from zipfile import ZipFile
 from tkinter.filedialog import askdirectory
     
 def error(msg, warning=False):
-    """Prints an error message in red.
+    """Prints an error message in red, or if warning=True, a warning message
+    in yellow.
     """
     if warning:
         sys.stdout.write("\033[1;33m")
@@ -19,20 +20,25 @@ def error(msg, warning=False):
         print('ERROR:', msg)
     sys.stdout.write("\033[0;0m")
 
-def setupFilepaths(proc=False):
+def setupFilepaths(inp=True, out=True, proc=False):
+    """Sets up the INPUT and OUTPUT filepaths by asking the user to select the
+    folders. A PROCESSING file can also be set up by setting proc=True.
+    """
     root = tk.Tk()
-    inpFol = askdirectory(title="Choose an INPUT folder")
+    if inp:
+        inpFol = askdirectory(title="Choose an INPUT folder")
     if proc:
         procFol = askdirectory(title="Choose a PROCESSING folder")
-    outFol = askdirectory(title="Choose an OUTPUT folder")
+    if out:
+        outFol = askdirectory(title="Choose an OUTPUT folder")
     root.destroy()
-    if inpFol == '':
+    if inp and inpFol == '':
         error('An INPUT folder must be selected.')
         sys.exit()
     if proc and procFol == '':
         error('A PROCCESSING folder must be selected.')
         sys.exit()
-    if outFol == '':
+    if out and outFol == '':
         error('An OUTPUT folder must be selected.')
         sys.exit()
     if proc:
@@ -54,6 +60,8 @@ def createFormat(df, style, idx=False):
     return form
 
 def done():
+    """Prints done in the console in green text.
+    """
     sys.stdout.write("\033[1;32m")
     print('Done!')
     sys.stdout.write("\033[0;0m")
